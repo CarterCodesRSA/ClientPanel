@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import {firestoreConnect} from 'react-redux-firebase'
+import { firebaseConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
 import { Link } from 'react-router-dom'
@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 class Clients extends Component {
 	render() {
 		const { clients } = this.props
-		
+
 		if (clients) {
 			return (
 				<div>
@@ -66,11 +66,12 @@ class Clients extends Component {
 }
 
 Clients.propTypes = {
-	firestore: PropTypes.object.isRequired
+	//firestore: PropTypes.object.isRequired
 }
 
-
-export default compose(firestoreConnect([{collection: 'clients'}]), 
-connect((state, props) => ({
-	clients: state.firestore.ordered.clients
-})))(Clients)
+export default compose(
+	firebaseConnect([{ collection: 'clients' }]),
+	connect((state, props) => ({
+		clients: state.firestore.ordered.clients
+	}))
+)(Clients)
