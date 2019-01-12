@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { firebaseConnect } from 'react-redux-firebase'
+import { firestoreConnect } from 'react-redux-firebase'
+import spinners from '../layout/Spinner'
 import PropTypes from 'prop-types'
 
 import { Link } from 'react-router-dom'
@@ -60,7 +61,7 @@ class Clients extends Component {
 				</div>
 			)
 		} else {
-			return <h1>Loading . . .</h1>
+			return <spinner />
 		}
 	}
 }
@@ -70,7 +71,7 @@ Clients.propTypes = {
 }
 
 export default compose(
-	firebaseConnect([{ collection: 'clients' }]),
+	firestoreConnect([{ collection: 'clients' }]),
 	connect((state, props) => ({
 		clients: state.firestore.ordered.clients
 	}))
