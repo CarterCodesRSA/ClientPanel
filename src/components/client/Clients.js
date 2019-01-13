@@ -2,14 +2,30 @@ import React, { Component } from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
-import spinners from '../layout/Spinner'
+import Spinner from '../layout/Spinner'
 import PropTypes from 'prop-types'
 
 import { Link } from 'react-router-dom'
 
 class Clients extends Component {
+	state = {
+		totalOwed: null
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		const { clients } = props
+
+		if (clients) {
+			const totals = clients.reduce((total, client) => {
+				return total + parseFloat(client.balance.toString())
+			}, 0)
+			return { totalOwed: totals }
+		}
+		return null
+	}
 	render() {
 		const { clients } = this.props
+		const { totalOwed } = this.state
 
 		if (clients) {
 			return (
@@ -22,10 +38,12 @@ class Clients extends Component {
 							</h2>
 						</div>
 						<div className="col-md-6">
-							<h2>
-								<i className="fa fas-users" />
-								Totals
-							</h2>
+							<h5 className="text-right text-secondary">
+								Totals Owed:
+								<span className="text-primary">
+									${parseFloat(totalOwed).toFixed(2)}
+								</span>
+							</h5>
 						</div>
 					</div>
 					<table className="table table-striped">
@@ -61,18 +79,19 @@ class Clients extends Component {
 				</div>
 			)
 		} else {
-			return <spinner />
+			return <Spinner />
 		}
 	}
 }
 
 Clients.propTypes = {
-	//firestore: PropTypes.object.isRequired
+	firestore: PropTypes.object.isRequired,
+	clients: PropTypes.array
 }
 
 export default compose(
-	firestoreConnect([{ collection: 'clients' }]),
+	firestoreConnect([{ collection: 'Clients' }]),
 	connect((state, props) => ({
-		clients: state.firestore.ordered.clients
+		clients: state.firestore.ordered.Clients
 	}))
 )(Clients)
