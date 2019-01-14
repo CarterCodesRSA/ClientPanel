@@ -1,6 +1,8 @@
-// import { compose } from 'redux'
-// import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
+import { notifyUser } from '../../Actions/notifyActions'
+import Alert from '../layout/Alert'
 import PropTypes from 'prop-types'
 
 import React, { Component } from 'react'
@@ -18,17 +20,20 @@ class Login extends Component {
 	onSubmit = e => {
 		e.preventDefault()
 		const { email, password } = this.state
-		const { firebase } = this.props
+		const { firebase, notifyUser } = this.props
 
-		firebase.login({ email, password }).catch(err => alert('invalid email'))
+		firebase
+			.login({ email, password })
+			.catch(err => notifyUser('Invalid Credentials', 'error'))
 	}
 
 	render() {
+		const { message, messageType } = this.props.notify
 		return (
 			<div className="row">
-				<div className="col-md-6">
+				<div className="col-md-8 mx-auto">
 					<div className="card">
-						<div className="card-body">
+						<div className="card-header">
 							<h1 className="text-center pb-4 pt-3">
 								<span className="text-primary">
 									{' '}
@@ -36,6 +41,11 @@ class Login extends Component {
 									Login
 								</span>
 							</h1>
+						</div>
+						<div className="card-body">
+							{message ? (
+								<Alert message={message} messageType={messageType} />
+							) : null}
 							<form onSubmit={this.onSubmit}>
 								<div className="form-group">
 									<label htmlFor="email">Email</label>
@@ -51,7 +61,7 @@ class Login extends Component {
 								<div className="form-group">
 									<label htmlFor="password">Password</label>
 									<input
-										type="text"
+										type="password"
 										className="form-control"
 										name="password"
 										required
@@ -69,8 +79,16 @@ class Login extends Component {
 	}
 }
 
-Login.PropTypes = {
+Login.propTypes = {
 	firebase: PropTypes.object.isRequired
 }
 
-export default firebaseConnect()(Login)
+export default compose(
+	firebaseConnect(),
+	connect(
+		(state, props) => ({
+			notify: state.notify
+		}),
+		{ notifyUser }
+	)
+)(Login)
