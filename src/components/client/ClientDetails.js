@@ -4,9 +4,15 @@ import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Link } from 'react-router-dom'
 import Spinner from '../layout/Spinner'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 class ClientDetails extends Component {
+	state = {
+		showBalanceUpdate: false,
+		balanceUpdateAmount: ''
+	}
+
 	render() {
 		const { Client } = this.props
 		console.log(Client)
@@ -44,7 +50,17 @@ class ClientDetails extends Component {
 								</div>
 								<div className="col-md-4 col-sm-6">
 									<h3 className="pull-right">
-										Balance: ${parseFloat(Client.balance).toFixed(2)}
+										Balance:
+										<span
+											className={
+												parseFloat(Client.balance) > 0
+													? 'text-danger'
+													: 'text-success'
+											}
+										>
+											{' '}
+											${parseFloat(Client.balance).toFixed(2)}
+										</span>
 									</h3>
 									{/* @todo - balanace form */}
 								</div>
