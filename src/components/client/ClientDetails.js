@@ -18,6 +18,7 @@ class ClientDetails extends Component {
 		})
 	}
 
+	//Update Balance
 	balanceSubmit = e => {
 		e.preventDefault()
 
@@ -35,6 +36,17 @@ class ClientDetails extends Component {
 			balanceUpdateAmount: ''
 		})
 	}
+
+	//delete client
+
+	onDeleteClick = () => {
+		const { Client, firestore, history } = this.props
+
+		firestore
+			.delete({ collection: 'Clients', doc: Client.id })
+			.then(history.push('/'))
+	}
+
 	render() {
 		const { Client } = this.props
 		const { showBalanceUpdate, balanceUpdateAmount } = this.state
@@ -82,7 +94,9 @@ class ClientDetails extends Component {
 								<Link to={`client/edit.${Client.id}`} className="btn btn-dark">
 									Edit
 								</Link>
-								<button className="btn btn-danger">Delete</button>
+								<button className="btn btn-danger" onClick={this.onDeleteClick}>
+									Delete
+								</button>
 							</div>
 						</div>
 					</div>
