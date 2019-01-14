@@ -1,5 +1,5 @@
 import { createStore, combineReducers, compose } from 'redux'
-import firebase from 'firebase'
+import * as firebase from 'firebase'
 import 'firebase/firestore'
 import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
 import { reduxFirestore, firestoreReducer } from 'redux-firestore'
@@ -20,7 +20,10 @@ const rrfConfig = {
 
 firebase.initializeApp(firebaseConfig)
 
-//const firestore = firebase.firestore()
+const firestore = firebase.firestore()
+
+const settings = { timestampsInSnapshots: true }
+firestore.settings(settings)
 
 const createStoreWithFirebase = compose(
 	reactReduxFirebase(firebase, rrfConfig),
