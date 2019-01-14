@@ -7,10 +7,18 @@ import PropTypes from 'prop-types'
 
 import React, { Component } from 'react'
 
-class Login extends Component {
+class Register extends Component {
 	state = {
 		email: '',
 		password: ''
+	}
+
+	componentWillMount() {
+		const { allowRegistration } = this.props.settings
+
+		if (!allowRegistration) {
+			this.props.history.push('/')
+		}
 	}
 
 	onChange = e => {
@@ -22,9 +30,10 @@ class Login extends Component {
 		const { email, password } = this.state
 		const { firebase, notifyUser } = this.props
 
+		//register with firebase
 		firebase
-			.login({ email, password })
-			.catch(err => notifyUser('Invalid Credentials', 'error'))
+			.createUser({ email, password })
+			.catch(err => notifyUser('That user already excises', 'error'))
 	}
 
 	render() {
@@ -38,7 +47,7 @@ class Login extends Component {
 								<span className="text-primary">
 									{' '}
 									<i className="fas fa-lock" />
-									Login
+									Register
 								</span>
 							</h1>
 						</div>
@@ -69,7 +78,11 @@ class Login extends Component {
 										onChange={this.onChange}
 									/>
 								</div>
-								<input type="submit" className="btn btn-block" value="login" />
+								<input
+									type="submit"
+									className="btn btn-block"
+									value="Register"
+								/>
 							</form>
 						</div>
 					</div>
@@ -79,7 +92,7 @@ class Login extends Component {
 	}
 }
 
-Login.propTypes = {
+Register.propTypes = {
 	firebase: PropTypes.object.isRequired,
 	notify: PropTypes.object.isRequired,
 	notifyUser: PropTypes.func.isRequired
@@ -89,8 +102,9 @@ export default compose(
 	firebaseConnect(),
 	connect(
 		(state, props) => ({
-			notify: state.notify
+			notify: state.notify,
+			settings: state.settings
 		}),
 		{ notifyUser }
 	)
-)(Login)
+)(Register)
