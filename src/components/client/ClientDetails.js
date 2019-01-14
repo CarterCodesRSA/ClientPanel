@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Link } from 'react-router-dom'
 import Spinner from '../layout/Spinner'
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 class ClientDetails extends Component {
@@ -13,9 +12,61 @@ class ClientDetails extends Component {
 		balanceUpdateAmount: ''
 	}
 
+	onChange = e => {
+		this.setState({
+			[e.target.name]: e.target.value
+		})
+	}
+
+	balanceSubmit = e => {
+		e.preventDefault()
+
+		const { Client, firestore } = this.props
+		const { balanceUpdateAmount } = this.state
+
+		const clientUpdate = {
+			balance: parseFloat(balanceUpdateAmount)
+		}
+
+		firestore.update({ collection: 'Clients', doc: Client.id }, clientUpdate)
+
+		this.setState({
+			showBalanceUpdate: !this.state.showBalanceUpdate,
+			balanceUpdateAmount: ''
+		})
+	}
 	render() {
 		const { Client } = this.props
-		console.log(Client)
+		const { showBalanceUpdate, balanceUpdateAmount } = this.state
+
+		let BalanceForm = ''
+
+		if (showBalanceUpdate) {
+			BalanceForm = (
+				<form onSubmit={this.balanceSubmit}>
+					<div className="input-group">
+						<input
+							type="text"
+							className="form-control"
+							name="balanceUpdateAmount"
+							placeholder="Add New Balance"
+							value={balanceUpdateAmount}
+							onChange={this.onChange}
+						/>
+						<div className="input-group-append">
+							<input
+								type="submit"
+								value="Update"
+								className="btn btn-secondary"
+							/>
+						</div>
+					</div>
+				</form>
+			)
+		} else {
+			BalanceForm = null
+		}
+
 		if (Client) {
 			return (
 				<div>
@@ -61,8 +112,21 @@ class ClientDetails extends Component {
 											{' '}
 											${parseFloat(Client.balance).toFixed(2)}
 										</span>
+										<small>
+											<a
+												href="#!"
+												onClick={() => {
+													this.setState({
+														showBalanceUpdate: !this.state.showBalanceUpdate
+													})
+												}}
+											>
+												{' '}
+												<i className="fas fa-pencil-alt" />
+											</a>
+										</small>
 									</h3>
-									{/* @todo - balanace form */}
+									{BalanceForm}
 								</div>
 							</div>
 
